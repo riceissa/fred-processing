@@ -7,6 +7,11 @@ with open("apikey.txt", "r") as f:
     API_KEY = next(f).strip()
 
 
+def get_tags_from_file():
+    with open("fred_tags", "r") as f:
+        return [line.strip() for line in f]
+
+
 def get_tags():
     tags_endpoint = "https://api.stlouisfed.org/fred/tags"
     tags = []
@@ -47,15 +52,32 @@ def get_series_names_for_tag(tag):
 
     return series_names
 
-def get_series(tags):
-    all_series = []
+
+def get_all_series_names_from_file():
+    with open("fred_series_names", "r") as f:
+        return [line.strip() for line in f]
+
+
+def get_all_series_names(tags):
+    all_series_names = []
 
     for tag in tags[:1]:
         ss = get_series_names_for_tag(tag)
         for s in ss:
-            if s not in all_series:
-                all_series.append(s)
+            if s not in all_series_names:
+                all_series_names.append(s)
+
+    with open("fred_series_names", "w") as f:
+        for sn in all_series_names:
+            f.write(tag + "\n")
+
+    return all_series_names
 
 
 if __name__ == "__main__":
-    get_tags()
+    tags = get_tags_from_file()
+    if not tags:
+        tags = get_tags()
+    series_names = get_all_series_names_from_file()
+    if not series_names:
+        series_names = get_all_series_names(tags)
