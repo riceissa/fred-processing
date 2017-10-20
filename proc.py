@@ -2,6 +2,7 @@
 
 import requests
 import os
+import sys
 
 
 with open("apikey.txt", "r") as f:
@@ -72,7 +73,8 @@ def get_all_series_names(tags):
     seen = set()
 
     with open("fred_series_names", "w") as f:
-        for tag in tags[:1]:
+        for tag in tags:
+            print("DOING", tag, file=sys.stderr)
             for s in get_series_names_for_tag(tag):
                 if s not in seen:
                     result.append((tag, s))
