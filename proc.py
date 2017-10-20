@@ -61,23 +61,22 @@ def get_series_names_for_tag(tag):
 def get_all_series_names_from_file():
     try:
         with open("fred_series_names", "r") as f:
-            return [line.strip() for line in f]
+            return [(line.strip()[0], line.strip()[1]) for line in f]
     except FileNotFoundError:
         return []
 
 
 def get_all_series_names(tags):
     result = []
-
-    for tag in tags[:1]:
-        ss = get_series_names_for_tag(tag)
-        for s in ss:
-            if s not in result:
-                result.append(s)
+    seen = set()
 
     with open("fred_series_names", "w") as f:
-        for sn in result:
-            f.write(sn + "\n")
+        for tag in tags[:1]:
+            for s in get_series_names_for_tag(tag):
+                if s not in seen:
+                    result.append((tag, s))
+                    f.write("{}\t{}\n".format(tag, s))
+                    seen.add(s)
 
     return result
 
