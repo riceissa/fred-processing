@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import requests
+import os
 
 
 with open("apikey.txt", "r") as f:
@@ -77,6 +78,8 @@ def get_all_series_names(tags):
                     result.append((tag, s))
                     f.write("{}\t{}\n".format(tag, s))
                     seen.add(s)
+            f.flush()
+            os.fsync(f.fileno())
 
     return result
 
