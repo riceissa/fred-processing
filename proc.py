@@ -8,8 +8,11 @@ with open("apikey.txt", "r") as f:
 
 
 def get_tags_from_file():
-    with open("fred_tags", "r") as f:
-        return [line.strip() for line in f]
+    try:
+        with open("fred_tags", "r") as f:
+            return [line.strip() for line in f]
+    except FileNotFoundError:
+        return []
 
 
 def get_tags():
@@ -38,40 +41,45 @@ def get_tags():
 
 def get_series_names_for_tag(tag):
     tags_series_endpoint = "https://api.stlouisfed.org/fred/tags/series"
-    series_names = []
+    result = []
     count = 1  # This just has to be greater than 0
 
-    while len(series_names) < count:
+    while len(result) < count:
         r = requests.get(tags_series_endpoint, params={
             "api_key": API_KEY,
             "file_type": "json",
             "tag_names": tag,
+            "offset": len(result),
         })
         j = r.json()
-        series_names.extend([x["id"] for x in j["seriess"]])
+        result.extend([x["id"] for x in j["seriess"]])
+        count = j["count"]
 
-    return series_names
+    return result
 
 
 def get_all_series_names_from_file():
-    with open("fred_series_names", "r") as f:
-        return [line.strip() for line in f]
+    try:
+        with open("fred_series_names", "r") as f:
+            return [line.strip() for line in f]
+    except FileNotFoundError:
+        return []
 
 
 def get_all_series_names(tags):
-    all_series_names = []
+    result = []
 
     for tag in tags[:1]:
         ss = get_series_names_for_tag(tag)
         for s in ss:
-            if s not in all_series_names:
-                all_series_names.append(s)
+            if s not in result:
+                result.append(s)
 
     with open("fred_series_names", "w") as f:
-        for sn in all_series_names:
-            f.write(tag + "\n")
+        for sn in result:
+            f.write(sn + "\n")
 
-    return all_series_names
+    return result
 
 
 if __name__ == "__main__":
