@@ -56,6 +56,7 @@ def get_series_names_for_tag(tag):
         j = r.json()
         result.extend([x["id"] for x in j["seriess"]])
         count = j["count"]
+        print(len(result), file=sys.stderr)
 
     return result
 
