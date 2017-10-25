@@ -3,6 +3,7 @@
 import requests
 import os
 import sys
+from util import *
 
 
 with open("apikey.txt", "r") as f:
@@ -118,10 +119,38 @@ def get_series_observations(series_name):
         count = j["count"]
 
 
+def print_sql_rows(series_name):
+    insert_line = "insert into data(region, year, database_url, data_retrieval_method, metric, units, value, notes) values"
+    count = 0
+    first = True
+    for ob in get_series_observations(series_name):
+        if first:
+            print(insert_line)
+        print("    " + ("" if first else ",") + "(" + ",".join([
+            mysql_quote("United States?"),  # region
+            mysql_quote(ob["date"]),  # year
+            mysql_quote("https://research.stlouisfed.org/docs/api/fred/"),  # database_url
+            mysql_quote(""),  # data_retrieval_method
+            mysql_quote(ob["title"]),  # metric
+            mysql_quote(ob["units"]),  # units
+            mysql_float(ob["value"]),  # value
+            mysql_quote(""),  # notes
+        ]) + ")")
+        first = False
+        count += 1
+        if count > 5000:
+            count = 0
+            first = True
+            print(";")
+    if not first:
+        print(";")
+
+
 if __name__ == "__main__":
-    tags = get_tags_from_file()
-    if not tags:
-        tags = get_tags()
-    series_names = get_all_series_names_from_file()
-    if not series_names:
-        series_names = get_all_series_names(tags)
+    # tags = get_tags_from_file()
+    # if not tags:
+    #     tags = get_tags()
+    # series_names = get_all_series_names_from_file()
+    # if not series_names:
+    #     series_names = get_all_series_names(tags)
+    print_sql_rows("GNPCA")
