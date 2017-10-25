@@ -114,13 +114,14 @@ def get_series_observations(series_name):
             n += 1
             yield {"date": x["date"],
                    "value": x["value"],
+                   "database_version": x["realtime_start"],
                    "units": units,
                    "title": title}
         count = j["count"]
 
 
 def print_sql_rows(series_name):
-    insert_line = "insert into data(region, year, database_url, data_retrieval_method, metric, units, value, notes) values"
+    insert_line = "insert into data(region, odate, database_url, database_version, data_retrieval_method, metric, units, value, notes) values"
     count = 0
     first = True
     for ob in get_series_observations(series_name):
@@ -128,8 +129,9 @@ def print_sql_rows(series_name):
             print(insert_line)
         print("    " + ("" if first else ",") + "(" + ",".join([
             mysql_quote("United States?"),  # region
-            mysql_quote(ob["date"]),  # year
+            mysql_quote(ob["date"]),  # odate
             mysql_quote("https://research.stlouisfed.org/docs/api/fred/"),  # database_url
+            mysql_quote(ob["database_version"]),  # database_version
             mysql_quote(""),  # data_retrieval_method
             mysql_quote(ob["title"]),  # metric
             mysql_quote(ob["units"]),  # units
