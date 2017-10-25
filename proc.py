@@ -87,6 +87,37 @@ def get_all_series_names(tags):
     return result
 
 
+def get_series_observations(series_name):
+    r = requests.get("https://api.stlouisfed.org/fred/series", params={
+        "api_key": API_KEY,
+        "file_type": "json",
+        "series_id": series_name,
+    })
+    j = r.json()
+    title = j["seriess"][0]["title"]
+    units = j["seriess"][0]["units"]
+
+    endpoint = "https://api.stlouisfed.org/fred/series/observations"
+    n = 0  # Track how many observations we have gotten
+    count = 1  # This just has to be greater than 0
+
+    while n < count:
+        r = requests.get(endpoint, params={
+            "api_key": API_KEY,
+            "file_type": "json",
+            "series_id": series_name,
+            "offset": n,
+        })
+        j = r.json()
+        for x in j["observations"]:
+            n += 1
+            yield {"date": x["date"],
+                   "value": x["value"],
+                   "units": units,
+                   "title": title}
+        count = j["count"]
+
+
 if __name__ == "__main__":
     tags = get_tags_from_file()
     if not tags:
