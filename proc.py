@@ -65,7 +65,11 @@ def get_series_names_for_tag(tag):
 def get_all_series_names_from_file():
     try:
         with open("fred_series_names", "r") as f:
-            return [(line.strip()[0], line.strip()[1]) for line in f]
+            result = []
+            for line in f:
+                lst = line.strip().split("\t")
+                result.append((lst[0], lst[1]))
+            return result
     except FileNotFoundError:
         return []
 
@@ -121,29 +125,31 @@ def get_series_observations(series_name):
 
 
 def print_sql_rows(series_name):
+    print("# " + series_name)
     insert_line = "insert into data(region, odate, database_url, database_version, data_retrieval_method, metric, units, value, notes) values"
     count = 0
     first = True
     for ob in get_series_observations(series_name):
-        if first:
-            print(insert_line)
-        print("    " + ("" if first else ",") + "(" + ",".join([
-            mysql_quote("United States?"),  # region
-            mysql_string_date(ob["date"]),  # odate
-            mysql_quote("https://research.stlouisfed.org/docs/api/fred/"),  # database_url
-            mysql_quote(ob["database_version"]),  # database_version
-            mysql_quote(""),  # data_retrieval_method
-            mysql_quote(ob["title"]),  # metric
-            mysql_quote(ob["units"]),  # units
-            mysql_float(ob["value"]),  # value
-            mysql_quote(""),  # notes
-        ]) + ")")
-        first = False
-        count += 1
-        if count > 5000:
-            count = 0
-            first = True
-            print(";")
+        if ob["value"] not in ["."]:
+            if first:
+                print(insert_line)
+            print("    " + ("" if first else ",") + "(" + ",".join([
+                mysql_quote("United States?"),  # region
+                mysql_string_date(ob["date"]),  # odate
+                mysql_quote("https://research.stlouisfed.org/docs/api/fred/"),  # database_url
+                mysql_quote(ob["database_version"]),  # database_version
+                mysql_quote(""),  # data_retrieval_method
+                mysql_quote(ob["title"]),  # metric
+                mysql_quote(ob["units"]),  # units
+                mysql_float(ob["value"]),  # value
+                mysql_quote(""),  # notes
+            ]) + ")")
+            first = False
+            count += 1
+            if count > 5000:
+                count = 0
+                first = True
+                print(";")
     if not first:
         print(";")
 
@@ -152,7 +158,8 @@ if __name__ == "__main__":
     # tags = get_tags_from_file()
     # if not tags:
     #     tags = get_tags()
-    # series_names = get_all_series_names_from_file()
-    # if not series_names:
-    #     series_names = get_all_series_names(tags)
-    print_sql_rows("GNPCA")
+    series_names = get_all_series_names_from_file()
+    if not series_names:
+        series_names = get_all_series_names(tags)
+    for s in series_names:
+        print_sql_rows(s[1])
