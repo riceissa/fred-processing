@@ -162,4 +162,7 @@ if __name__ == "__main__":
     if not series_names:
         series_names = get_all_series_names(tags)
     for s in series_names:
-        print_sql_rows(s[1])
+        try:
+            print_sql_rows(s[1])
+        except:
+            print("# failed for {}, skipping".format(s))
