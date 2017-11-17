@@ -9,7 +9,7 @@ FIELD_NAMES = ["region", "odate", "database_url", "database_version",
 
 
 def process_line(line):
-    if line.startswith("#") or line.startswith("insert"):
+    if line.startswith("#") or line.startswith("insert") or line.startswith(";"):
         return line[:-1]
     assert line.startswith("    ")
     if line.startswith("    ,"):
