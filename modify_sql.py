@@ -2,13 +2,30 @@
 
 import sys
 
+from util import *
+
+FIELD_NAMES = ["region", "odate", "database_url", "database_version",
+        "data_retrieval_method", "metric", "units", "value", "notes"]
+
 
 def process_line(line):
     if line.startswith("#") or line.startswith("insert"):
-        return line
+        return line[:-1]
     assert line.startswith("    ")
+    if line.startswith("    ,"):
+        result = "    ,"
+    else:
+        result = "    "
     fields = parse_line(line)
-    print(fields)
+    assert len(FIELD_NAMES) == len(fields)
+    lst = []
+    for i in range(len(FIELD_NAMES)):
+        if FIELD_NAMES[i] == "value" or fields[i] == "NULL":
+            lst.append(fields[i])
+        else:
+            lst.append(mysql_quote(fields[i]))
+    result += "(" + ",".join(lst) + ")"
+    return result
 
 
 def parse_line(line):
@@ -56,4 +73,4 @@ def parse_line(line):
 
 if __name__ == "__main__":
     for line in sys.stdin:
-        process_line(line)
+        print(process_line(line))
