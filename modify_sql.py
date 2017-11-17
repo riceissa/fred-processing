@@ -30,8 +30,7 @@ def parse_line(line):
         elif in_str == 2 and c == "'":
             fields[i] += "'"
             in_str = 1
-        elif in_str == 2:
-            assert c in [",", ")"]
+        elif in_str == 2 and c == ",":
             in_str = 0
             i += 1
             fields[i] = ""
@@ -40,7 +39,7 @@ def parse_line(line):
         elif in_str == 0 and c == ",":
             i += 1
             fields[i] = ""
-        elif in_str == 0 and c == ")":
+        elif (in_str == 0 or in_str == 2) and c == ")":
             break
         elif in_str == 0:
             assert c not in [",", "'", ")"]
