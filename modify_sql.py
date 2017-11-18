@@ -7,6 +7,20 @@ from util import *
 FIELD_NAMES = ["region", "odate", "database_url", "database_version",
         "data_retrieval_method", "metric", "units", "value", "notes"]
 
+# Fields map
+FM = {}
+for n, f in enumerate(FIELD_NAMES):
+    FM[f] = n
+
+
+def modify_fields(fields):
+    if " for " in fields[FM["metric"]]:
+        lst = fields[FM["metric"]].split(" for ")
+        metric = " for ".join(lst[:-1])
+        loc = lst[-1]
+        fields[FM["metric"]] = metric
+        fields[FM["region"]] = loc
+    return fields
 
 def process_line(line):
     if line.startswith("#") or line.startswith("insert") or line.startswith(";"):
@@ -16,7 +30,7 @@ def process_line(line):
         result = "    ,"
     else:
         result = "    "
-    fields = parse_line(line)
+    fields = modify_fields(parse_line(line))
     assert len(FIELD_NAMES) == len(fields)
     lst = []
     for i in range(len(FIELD_NAMES)):
