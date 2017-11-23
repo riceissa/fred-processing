@@ -19,7 +19,7 @@ def modify_fields(fields):
         metric = " for ".join(lst[:-1])
         loc = lst[-1]
         fields[FM["metric"]] = metric
-        fields[FM["region"]] = loc
+        fields[FM["region"]] = region_normalized(loc)
     return fields
 
 def process_line(line):
