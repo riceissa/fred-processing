@@ -2,7 +2,7 @@
 
 import sys
 
-from util import *
+from devec_sql_common import *
 
 FIELD_NAMES = ["region", "odate", "database_url", "database_version",
         "data_retrieval_method", "metric", "units", "value", "notes"]
