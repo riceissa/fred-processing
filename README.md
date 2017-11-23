@@ -10,6 +10,16 @@ transforming it. This allows us to download the data from the API once, then
 transform it later. (It might have been better to download the data in a more
 "neutral" format like a TSV so that the parsing would have been simpler.)
 
+To generate the SQL files, the scripts in this repository require the
+[`devec_sql_common`](https://github.com/riceissa/devec_sql_common)
+Python package.  To install, run:
+
+```bash
+git clone https://github.com/riceissa/devec_sql_common
+cd devec_sql_common
+pip3 install -e .
+```
+
 ## License
 
 CC0
