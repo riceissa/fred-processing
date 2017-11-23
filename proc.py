@@ -134,7 +134,7 @@ def print_sql_rows(series_name):
             if first:
                 print(insert_line)
             print("    " + ("" if first else ",") + "(" + ",".join([
-                mysql_quote("United States?"),  # region
+                mysql_quote(region_normalized("United States?")),  # region
                 mysql_string_date(ob["date"]),  # odate
                 mysql_quote("https://research.stlouisfed.org/docs/api/fred/"),  # database_url
                 mysql_quote(ob["database_version"]),  # database_version
