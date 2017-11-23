@@ -3,7 +3,7 @@
 import requests
 import os
 import sys
-from util import *
+from devec_sql_common import *
 
 
 with open("apikey.txt", "r") as f:
