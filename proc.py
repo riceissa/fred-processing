@@ -161,8 +161,11 @@ if __name__ == "__main__":
     series_names = get_all_series_names_from_file()
     if not series_names:
         series_names = get_all_series_names(tags)
+
+    print_insert_header()
     for s in series_names:
         try:
             print_sql_rows(s[1])
         except:
             print("# failed for {}, skipping".format(s))
+    print_insert_footer()
