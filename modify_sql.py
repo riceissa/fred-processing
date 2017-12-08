@@ -86,5 +86,7 @@ def parse_line(line):
 
 
 if __name__ == "__main__":
+    print_insert_header()
     for line in sys.stdin:
         print(process_line(line))
+    print_insert_footer()
